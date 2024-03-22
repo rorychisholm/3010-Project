@@ -20,6 +20,7 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
+#Player Class for our little shooting hero controls movement for now
 class Player:
     def __init__(self, x, y, colour):
         self.x = x
@@ -34,6 +35,23 @@ class Player:
         pygame.draw.polygon(screen, self.colour, ((self.x-15, self.y+15), 
                                                     (self.x, self.y-15),
                                                     (self.x+15, self.y+15)))
+    
+class Projectile:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.vx = 0
+        self.vy = 0
+        pass
+    
+    def f(self):
+        pass
+    
+    def update(self):
+        pass
+    
+    def draw(self):
+        pass
     
 class Invader:
     def __init__(self, x, y, colour):
@@ -62,6 +80,7 @@ def main():
     screen = pygame.display.set_mode((width, height))
     pygame.display.set_caption('Space Invaders 2024')
     
+    #INIT for Objects
     objs = []
     objs.append((Player(0, 600, WHITE)))
     
@@ -74,14 +93,14 @@ def main():
                 pygame.quit()
                 sys.exit()
         
-        # Update.
+        # Update
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 objs[0].update(objs[0].x - 10)
             if event.key == pygame.K_RIGHT:
                 objs[0].update(objs[0].x + 10)
                 
-        # Draw.
+        # Draw
         for i in objs:
             i.draw(screen)
         
