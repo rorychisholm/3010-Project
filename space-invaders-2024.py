@@ -9,7 +9,7 @@ April 5th, 2024
 """
 
 import sys
- 
+import numpy as np
 import pygame
 from pygame.locals import *
 
@@ -37,21 +37,37 @@ class Player:
                                                     (self.x+15, self.y+15)))
     
 class Projectile:
-    def __init__(self, x, y):
+    def __init__(self, x, y, angle_d, colour):
+        speed = 70
+        angle_r = angle_d * np.pi / 180
+        self.t = 0
+        self.dt = 1
         self.x = x
         self.y = y
-        self.vx = 0
-        self.vy = 0
+        self.vx = speed * np.cos(angle_r)
+        self.vy = speed * np.sin(angle_r)
+        self.colour = colour
+        self.gamma = 0.0001
+        self.g = 9.8
         pass
-    
-    def f(self):
-        pass
-    
+
     def update(self):
-        pass
+        self.t += self.dt
+        dx = self.vx * self.dt
+        dy = self.vy * self.dt
+        dvx = -(self.gamma * self.vx)
+        dvy = -(self.g + self.gamma * self.vy)
+        
+        self.x -= dx
+        self.y -= dy
+        self.vx += dvx
+        self.vy += dvy
+        
+       
     
-    def draw(self):
-        pass
+    def draw(self, screen):
+        #print(self.x)
+        pygame.draw.circle(surface=screen, color=self.colour, center=(self.x, self.y), radius=5)
     
 class Invader:
     def __init__(self, x, y, colour):
@@ -73,7 +89,7 @@ class Sim:
 def main():
     pygame.init()
     
-    fps = 60
+    fps = 30
     fpsClock = pygame.time.Clock()
     
     width, height = 640, 640
@@ -99,7 +115,13 @@ def main():
                 objs[0].update(objs[0].x - 10)
             if event.key == pygame.K_RIGHT:
                 objs[0].update(objs[0].x + 10)
-                
+            if event.key == pygame.K_UP:
+                objs.append((Projectile(objs[0].x, objs[0].y, 90, RED)))    
+        for i in objs[1:]:
+            if i.x > width or i.x < 0 or i.y > height or i.y < 0:
+                objs.remove(i)
+            else:
+                i.update()
         # Draw
         for i in objs:
             i.draw(screen)
