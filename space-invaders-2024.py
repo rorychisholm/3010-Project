@@ -38,7 +38,7 @@ class Player:
     
 class Projectile:
     def __init__(self, x, y, angle_d, colour):
-        speed = 70
+        speed = 110
         angle_r = angle_d * np.pi / 180
         self.t = 0
         self.dt = 1
@@ -116,9 +116,9 @@ def main():
             if event.key == pygame.K_RIGHT:
                 objs[0].update(objs[0].x + 10)
             if event.key == pygame.K_UP:
-                objs.append((Projectile(objs[0].x, objs[0].y, 90, RED)))    
+                objs.append((Projectile(objs[0].x, objs[0].y, 90, RED)))
         for i in objs[1:]:
-            if i.x > width or i.x < 0 or i.y > height or i.y < 0:
+            if i.x > width or i.x < 0 or i.y > height or i.y < -height:
                 objs.remove(i)
             else:
                 i.update()
