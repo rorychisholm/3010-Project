@@ -20,21 +20,30 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
+#used to get load files
+def load_image(name):
+    image = pygame.image.load(name)
+    return image
+
 #Player Class for our little shooting hero controls movement for now
 class Player:
-    def __init__(self, x, y, colour):
+    def __init__(self, x, y, imagefile):
         self.x = x
         self.y = y
-        self.colour = colour
+        self.image = load_image(imagefile)
+        #this rectangle is at the same position as the player sprite
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
         pass
         
     def update(self, x):
-        self.x = x
+        self.rect.x = x
         
     def draw(self, screen):
-        pygame.draw.polygon(screen, self.colour, ((self.x-15, self.y+15), 
-                                                    (self.x, self.y-15),
-                                                    (self.x+15, self.y+15)))
+        screen.blit(self.image, self.rect)
+
     
 class Projectile:
     def __init__(self, x, y, angle_d, colour):
@@ -98,7 +107,7 @@ def main():
     
     #INIT for Objects
     objs = []
-    objs.append((Player(0, 600, WHITE)))
+    objs.append((Player(0, 550, 'resources/player.png')))
     
     # Game loop.
     while True:
@@ -110,13 +119,15 @@ def main():
                 sys.exit()
         
         # Update
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                objs[0].update(objs[0].x - 10)
-            if event.key == pygame.K_RIGHT:
-                objs[0].update(objs[0].x + 10)
-            if event.key == pygame.K_UP:
-                objs.append((Projectile(objs[0].x, objs[0].y, 90, RED)))
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            objs[0].update(objs[0].rect.x - 10)
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            objs[0].update(objs[0].rect.x + 10)
+        if keys[pygame.K_UP] or keys[pygame.K_SPACE] or keys[pygame.K_w]:
+            objs.append((Projectile(objs[0].x, objs[0].y, 90, RED)))
+
+
         for i in objs[1:]:
             if i.x > width or i.x < 0 or i.y > height or i.y < -height:
                 objs.remove(i)
