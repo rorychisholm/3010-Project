@@ -72,6 +72,9 @@ class Projectile:
         self.y -= dy
         self.vx += dvx
         self.vy += dvy
+        
+        
+        
     def draw(self, screen):
         pygame.draw.circle(surface=screen, color=self.colour, center=(self.x, self.y), radius=5)
 
@@ -84,6 +87,7 @@ class Aim:
         self.angle = angle
         self.colour = colour
         pass
+    
     def update(self, x, angle):
         self.x = x
         self.angle = angle
@@ -98,28 +102,24 @@ class Aim:
 
 class Invader:
     def __init__(self, x, y, imagefile):
-        self.x = x
-        self.y = y
+        #self.x = x
+        #self.y = y
         self.image = load_image(imagefile)
         #this rectangle is at the same position as the invader sprite
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        pass
+
         
     def update(self, x, y):
         self.rect.x = x
         self.rect.y = y
-        pass
+
         
     def draw(self, screen):
         screen.blit(self.image, self.rect)
-        pass
+    
 
-class Sim:
-    def __init__(self):
-        pass
- 
 def main():
     pygame.init()
     
@@ -223,11 +223,19 @@ def main():
             #timer loop over
             last_print_time = current_time
 
+        #collision detection
         for i in objs[2:]:
+            for j in enemy_objs:
+                if i.x < j.rect.x + 64 and i.x > j.rect.x and i.y < j.rect.y + 64 and i.y > j.rect.y + 20:
+                    objs.remove(i)
+                    enemy_objs.remove(j)
+            #projectile boundry check - if outside box remove projectile else update it
             if i.x > width or i.x < 0 or i.y > height or i.y < -height:
                 objs.remove(i)
             else:
                 i.update()
+                
+            
        
         # Draw
         for i in objs:
