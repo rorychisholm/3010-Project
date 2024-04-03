@@ -48,17 +48,17 @@ class Player:
     
 class Projectile:
     def __init__(self, x, y, angle_d, colour):
-        speed = 100
+        speed = 135
         angle_r = angle_d * np.pi / 180
         self.t = 0
-        self.dt = 1
+        self.dt = 0.1
         self.x = x
         self.y = y
         self.vx = speed * np.cos(angle_r)
         self.vy = speed * np.sin(angle_r)
         self.colour = colour
         self.gamma = 0.0001
-        self.g = 9.8
+        self.g = 1.62 #moon
         pass
 
     def update(self):
@@ -226,7 +226,7 @@ def main():
         #collision detection
         for i in objs[2:]:
             for j in enemy_objs:
-                if i.x < j.rect.x + 64 and i.x > j.rect.x and i.y < j.rect.y + 64 and i.y > j.rect.y + 20:
+                if i.x < j.rect.x + 64 and i.x > j.rect.x and i.y < j.rect.y + 64 and i.y > j.rect.y:
                     objs.remove(i)
                     enemy_objs.remove(j)
             #projectile boundry check - if outside box remove projectile else update it
