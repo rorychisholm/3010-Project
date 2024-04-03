@@ -123,7 +123,7 @@ class Invader:
 def main():
     pygame.init()
     
-    fps = 30
+    fps = 300
     fpsClock = pygame.time.Clock()
     
     width, height = 640, 640
@@ -222,7 +222,13 @@ def main():
                 
             #timer loop over
             last_print_time = current_time
-
+            
+        # if an enemy reaches the player shuts down game
+        for j in enemy_objs:
+            if j.rect.y + 32 > objs[0].y:
+                pygame.quit()
+                sys.exit()
+            
         #collision detection
         for i in objs[2:]:
             for j in enemy_objs:
