@@ -194,9 +194,9 @@ def main():
     last_print_time = pygame.time.get_ticks()
     print_interval = 1500 #timed interval in ms
 
-    #when true enemies move right, when false enemies move left
-    enemy_right = True
-    enemy_walk = 2 # 0 - up, 1 - left, 2 - down, 3 - right
+    # 0 - up, 1 - left, 2 - down, 3 - right
+    enemy_walk = 2 
+    
     #game over hasnt been met
     game_run = True
     
