@@ -241,7 +241,8 @@ def main():
         #3 second timer loop for enemy movement
         current_time = pygame.time.get_ticks()
         if current_time - last_print_time >= print_interval:
-            enemy_walk = random.randrange(0, 4)
+            # 0 - up, 1 - right, 2 - down, 3 - left
+            enemy_walk = random.choices(range(0,4), [5/100, 30/100, 35/100, 30/100])[0]
             print(enemy_walk)
             #if enemy_right true then move right every 3 seconds
             for invader in enemy_objs:    
@@ -268,7 +269,7 @@ def main():
                 elif enemy_walk == 1:
                     invader.update(invader.rect.x + 15, invader.rect.y)
                 elif enemy_walk == 2:
-                    invader.update(invader.rect.x, invader.rect.y + 15)
+                    invader.update(invader.rect.x, invader.rect.y + 10)
                 elif enemy_walk == 3:
                     invader.update(invader.rect.x - 15, invader.rect.y)
                     
