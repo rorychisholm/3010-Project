@@ -90,7 +90,6 @@ class Aim:
     def update(self, x, angle):
         self.x = x
         self.angle = angle
-
     
     def draw(self, screen):
 
@@ -128,7 +127,6 @@ class Invader:
         self.rect.x = x
         self.rect.y = y
 
-        
     def update(self, x, y):
         self.rect.x = x
         self.rect.y = y
@@ -148,7 +146,6 @@ class Barrier:
         self.x = x
         self.y = y
 
-        
     def draw(self, screen):
         pygame.draw.rect(screen, WHITE, Rect(self.x, self.y, self.width, self.height),
                          width=0, border_radius=10)
@@ -193,8 +190,6 @@ def main():
             pos_y += 70
         
             
-
-
     #the enemies move once every timed interval. These variables allow the timer to function
     last_print_time = pygame.time.get_ticks()
     print_interval = 1500 #timed interval in ms
@@ -231,19 +226,16 @@ def main():
             if objs[1].angle < 180:
                 objs[1].update(objs[1].x, objs[1].angle + 5)
             
-
         #shoot
         if keys[pygame.K_UP] or keys[pygame.K_SPACE] or keys[pygame.K_w]:
             if len(objs) == 2:
                 objs.append((Projectile(objs[0].rect.centerx, objs[0].rect.centery, objs[1].angle, RED)))
         
-        
         #3 second timer loop for enemy movement
         current_time = pygame.time.get_ticks()
         if current_time - last_print_time >= print_interval:
             # 0 - up, 1 - right, 2 - down, 3 - left
-            enemy_walk = random.choices(range(0,4), [5/100, 30/100, 35/100, 30/100])[0]
-            print(enemy_walk)
+            enemy_walk = random.choices(range(0,4), [5/100, 30/100, 35/100, 30/100])[0] #weighted random
             #if enemy_right true then move right every 3 seconds
             for invader in enemy_objs:    
                 # 0 - up, 1 - right, 2 - down, 3 - left
@@ -273,16 +265,8 @@ def main():
                 elif enemy_walk == 3:
                     invader.update(invader.rect.x - 15, invader.rect.y)
                     
-
-
-
-                
             #timer loop over
             last_print_time = current_time
-            
-        
-   
-         
         
         #projectile collision detection
         for i in objs[2:]:
