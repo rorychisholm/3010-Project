@@ -265,11 +265,11 @@ def main():
             for invader in enemy_objs:        
                 # 0 - up, 1 - right, 2 - down, 3 - left
                 if enemy_walk == 0:
-                    invader.update(invader.rect.x, invader.rect.y - 5)
+                    invader.update(invader.rect.x, invader.rect.y - 10)
                 elif enemy_walk == 1:
                     invader.update(invader.rect.x + 15, invader.rect.y)
                 elif enemy_walk == 2:
-                    invader.update(invader.rect.x, invader.rect.y + 10)
+                    invader.update(invader.rect.x, invader.rect.y + 15)
                 elif enemy_walk == 3:
                     invader.update(invader.rect.x - 15, invader.rect.y)
                     
