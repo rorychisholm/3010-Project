@@ -73,8 +73,6 @@ class Projectile:
         self.vx += dvx
         self.vy += dvy
         
-        
-        
     def draw(self, screen):
         pygame.draw.circle(surface=screen, color=self.colour, center=(self.x, self.y), radius=5)
 
@@ -119,11 +117,48 @@ class Invader:
     def draw(self, screen):
         screen.blit(self.image, self.rect)
     
+class Invader:
+    def __init__(self, x, y, imagefile):
+        #self.x = x
+        #self.y = y
+        self.image = load_image(imagefile)
+        #this rectangle is at the same position as the invader sprite
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+        
+    def update(self, x, y):
+        self.rect.x = x
+        self.rect.y = y
+
+        
+    def draw(self, screen):
+        screen.blit(self.image, self.rect)
+
+class Barrier:
+    def __init__(self, x, y, w, h):
+        self.x = x
+        self.y = y
+        self.width = w
+        self.height = h
+        
+    def update(self, x, y):
+        self.x = x
+        self.y = y
+
+        
+    def draw(self, screen):
+        pygame.draw.rect(screen, WHITE, Rect(self.x, self.y, self.width, self.height),
+                         width=0, border_radius=10)
 
 def main():
     pygame.init()
+    pygame.font.init()
     
-    fps = 300
+    siFont = pygame.font.SysFont("agencyfb", 30)
+    
+    fps = 30
     fpsClock = pygame.time.Clock()
     
     width, height = 640, 640
@@ -134,6 +169,11 @@ def main():
     objs = []
     objs.append((Player(10, 550, 'resources/player.png')))
     objs.append((Aim(objs[0].rect.centerx, objs[0].rect.centery-10, 90, RED)))
+    
+    barr_objs = []
+    barr_objs.append(Barrier(450, 450, 100, 75))
+    barr_objs.append(Barrier(90, 450, 100, 75))
+    barr_objs.append(Barrier(295, 450, 50, 75))
 
     #INIT for invaders
     #Since there are so many invaders and they function very differently from the objects in the above objs I decided to make a
@@ -161,8 +201,11 @@ def main():
     #when true enemies move right, when false enemies move left
     enemy_right = True
     
+    #game over hasnt been met
+    game_run = True
+    
     # Game loop.
-    while True:
+    while game_run:
         screen.fill(BLACK)
         
         for event in pygame.event.get():
@@ -223,35 +266,88 @@ def main():
             #timer loop over
             last_print_time = current_time
             
-        # if an enemy reaches the player shuts down game
-        for j in enemy_objs:
-            if j.rect.y + 32 > objs[0].y:
-                pygame.quit()
-                sys.exit()
-            
-        #collision detection
+        
+   
+         
+        
+        #projectile collision detection
         for i in objs[2:]:
+            #projectile - enemy
             for j in enemy_objs:
                 if i.x < j.rect.x + 64 and i.x > j.rect.x and i.y < j.rect.y + 64 and i.y > j.rect.y:
                     objs.remove(i)
                     enemy_objs.remove(j)
+            #projectile - barrier
+            for j in barr_objs:
+                if i.x < j.x + j.width and i.x > j.x and i.y < j.y + j.height and i.y > j.y:
+                    objs.remove(i)
             #projectile boundry check - if outside box remove projectile else update it
             if i.x > width or i.x < 0 or i.y > height or i.y < -height:
                 objs.remove(i)
             else:
                 i.update()
                 
-            
+       
+        for i in enemy_objs:
+            for j in barr_objs:
+                #checks if feet are in the barrier 
+                if (i.rect.y + 64 > j.y 
+                    and ((i.rect.x > j.x and i.rect.x < j.x + j.width) 
+                    or (i.rect.x + 64 > j.x and i.rect.x + 64 < j.x + j.width))):
+                    enemy_objs.remove(i)
+                    barr_objs.remove(j)
+                    
+       # if an enemy reaches the player ends game
+        for i in enemy_objs:
+            if i.rect.y + 32 > objs[0].y:
+                game_run = False
+        #if there are less than half enemies speed up
+        if len(enemy_objs) < 14:
+            print_interval = 1000
+        #if there are less than quater enemies speed up
+        if len(enemy_objs) < 7:
+            print_interval = 500
+        #if there are no remaining enemies
+        if not enemy_objs:
+            game_run = False
        
         # Draw
-        for i in objs:
-            i.draw(screen)
         for i in enemy_objs:
             i.draw(screen)
+        for i in objs:
+            i.draw(screen)
+        for i in barr_objs:
+            i.draw(screen)
+        
         
         pygame.display.flip()
         fpsClock.tick(fps)
+        
     
+    #GAME OVER STUFF
+    screen.fill(BLACK)
+    g_o = siFont.render("GAME OVER", True, WHITE)
+    #if there are no remaining enemies 
+    if not enemy_objs:
+        y_w = siFont.render("YOU WIN", True, WHITE)
+        screen.blit(y_w, (277,340))
+    else:
+        y_l = siFont.render("YOU LOSE", True, WHITE)
+        screen.blit(y_l, (277,340))
+    screen.blit(g_o, (265,300))
+    pygame.display.flip()
     
+    #waits for key press
+    pygame.event.clear()
+    while True:
+        event = pygame.event.wait()
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+        elif event.type == KEYDOWN:
+            break
+         
+        
+        
 if __name__ == '__main__':
     main()
