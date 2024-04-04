@@ -165,7 +165,7 @@ def main():
     
     #INIT for Objects
     objs = []
-    objs.append((Player(10, 550, 'resources/player.png')))
+    objs.append((Player(288, 550, 'resources/player.png')))
     objs.append((Aim(objs[0].rect.centerx, objs[0].rect.centery-10, 90, RED)))
     
     barr_objs = []
