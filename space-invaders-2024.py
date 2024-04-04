@@ -12,6 +12,7 @@ import sys
 import numpy as np
 import pygame
 import math
+import random
 import itertools
 from pygame.locals import *
 
@@ -200,7 +201,7 @@ def main():
 
     #when true enemies move right, when false enemies move left
     enemy_right = True
-    
+    enemy_walk = 2 # 0 - up, 1 - left, 2 - down, 3 - right
     #game over hasnt been met
     game_run = True
     
@@ -235,31 +236,43 @@ def main():
         if keys[pygame.K_UP] or keys[pygame.K_SPACE] or keys[pygame.K_w]:
             if len(objs) == 2:
                 objs.append((Projectile(objs[0].rect.centerx, objs[0].rect.centery, objs[1].angle, RED)))
-                
+        
+        
         #3 second timer loop for enemy movement
         current_time = pygame.time.get_ticks()
         if current_time - last_print_time >= print_interval:
-            
-            for invader in enemy_objs:
-                #when enemies go past x560
+            enemy_walk = random.randrange(0, 4)
+            print(enemy_walk)
+            #if enemy_right true then move right every 3 seconds
+            for invader in enemy_objs:    
+                # 0 - up, 1 - right, 2 - down, 3 - left
                 if invader.rect.x >= 560:
                     #move all invaders down by 5
                     for invader in enemy_objs:    
                         invader.rect.y += 5
                     #set enemies to move left
-                    enemy_right = False
-
-                if invader.rect.x <= 10:
+                    enemy_walk = 3
+                elif invader.rect.x <= 10:
                     for invader in enemy_objs:    
                         invader.rect.y += 5
-                    enemy_right = True
-
-            #if enemy_right true then move right every 3 seconds
-            for invader in enemy_objs:    
-                if enemy_right:
+                    #set enemies to move right
+                    enemy_walk = 1
+                if invader.rect.y <= 10:
+                    for invader in enemy_objs:    
+                        invader.rect.y += 10 
+                
+            for invader in enemy_objs:        
+                # 0 - up, 1 - right, 2 - down, 3 - left
+                if enemy_walk == 0:
+                    invader.update(invader.rect.x, invader.rect.y - 5)
+                elif enemy_walk == 1:
                     invader.update(invader.rect.x + 15, invader.rect.y)
-                else:
+                elif enemy_walk == 2:
+                    invader.update(invader.rect.x, invader.rect.y + 15)
+                elif enemy_walk == 3:
                     invader.update(invader.rect.x - 15, invader.rect.y)
+                    
+
 
 
                 
