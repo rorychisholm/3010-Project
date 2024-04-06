@@ -130,8 +130,10 @@ class Invader:
         rect = self.image_rot.get_rect()
         rect.center = (self.rect.x, self.rect.y)
         rect.centery = rect.centery 
-        screen.blit(self.image_rot, rect)
+        screen.blit(self.image_rot, self.rect)
         #screen.blit(self.image, self.rect)
+        #pygame.draw.rect(screen, RED, self.rect, 1)
+        
 
     def fall(self, y):
         self.rect.y = y
