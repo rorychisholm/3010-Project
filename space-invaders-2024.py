@@ -509,8 +509,8 @@ def main():
                 print("ANGLE", angle)
                 
                 j.rotate(angle)
-                j.draw(screen)
-                pygame.display.update() 
+                #j.draw(screen)
+                #pygame.display.update() 
 
                 if 90 < angle < 100:
                     angle += 20
@@ -550,8 +550,8 @@ def main():
                 else:
                     i.rotate(angle)
                     i.fall(i.rect.y)
-                    i.draw(screen)
-                    pygame.display.update()
+                    #i.draw(screen)
+                    #pygame.display.update()
                     
         #if there are less than half enemies speed up
         if len(enemy_objs) < 14:
