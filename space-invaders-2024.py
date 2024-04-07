@@ -484,8 +484,8 @@ def main():
                 print("ANGLE", angle)
                 
                 j.rotate(angle)
-                j.draw(screen)
-                pygame.display.update() 
+                #j.draw(screen)
+                #pygame.display.update() 
 
                 if 90 < angle < 100:
                     angle += 20
