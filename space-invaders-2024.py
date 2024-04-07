@@ -99,6 +99,7 @@ class Aim:
 
         pygame.draw.line(screen, self.colour, (self.x, self.y), (end_x, end_y), width=4)
 
+
 class Invader:
     def __init__(self, x, y, exploded, imagefile):
         self.image = load_image(imagefile)
@@ -132,37 +133,69 @@ class Invader:
         rect.centery = rect.centery 
         screen.blit(self.image_rot, self.rect)
         #screen.blit(self.image, self.rect)
+        #this line makes hitboxes visible for testing purposes
         #pygame.draw.rect(screen, RED, self.rect, 1)
         
 
     def fall(self, y):
         self.rect.y = y
-        # Calculate the force using F = mass * gravity
+        #calculate the force for an object in freefall (f = m*g)
         f = self.m * self.g
-        # Acceleration is force divided by mass
+        #calculate acceleration = f/m
         a = f / self.m
-        # Update vertical velocity using acceleration
+        #update vy by acceleration
         self.vy += a
-        # Update y position based on vertical velocity
+        #update y position based on vy
         self.rect.y = y + self.vy
-    
 
 
 class Barrier:
-    def __init__(self, x, y, w, h):
-        self.x = x
-        self.y = y
-        self.width = w
-        self.height = h
+    def __init__(self, x, y, imagefile):#, w, h):
+        #self.x = x
+        #self.y = y
+        #self.width = w
+        #self.height = h
+
+        self.image = load_image(imagefile)
+        self.image_rot = self.image
+
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.hit_l = False
+        self.hit_r = False
         
     def update(self, x, y):
-        self.x = x
-        self.y = y
+        self.rect.x = x
+        self.rect.y = y
+
+    def shot_l(self):
+        print("BARRIER SHOT")
+        self.hit_l = True
+
+    def shot_r(self):
+        self.hit_r = True
+
+    def rotate(self, angle):
+        print("ROTATE CALLED")
+        self.image_rot = pygame.transform.rotate(self.image, angle)
+
 
     def draw(self, screen):
-        pygame.draw.rect(screen, WHITE, Rect(self.x, self.y, self.width, self.height),
-                         width=0, border_radius=10)
+        #pygame.draw.rect(screen, WHITE, Rect(self.x, self.y, self.width, self.height),
+        #                 width=0, border_radius=10)
+        rect = self.image_rot.get_rect()
+        rect.center = (self.rect.x, self.rect.y)
+        rect.centery = rect.centery 
+        screen.blit(self.image_rot, self.rect)
+        #screen.blit(self.image, self.rect)
+        #this line makes hitboxes visible for testing purposes
+        #pygame.draw.rect(screen, RED, self.rect, 1)
 
+    def set_rect(self, screen):
+        print("set rect")
+        rect = self.image_rot.get_rect()
+        pygame.draw.rect(screen, RED, rect, 1)
 
 class RigidBody:
 
@@ -249,6 +282,8 @@ class RigidBody:
         cosang = np.dot(v1, v2)
         axis = np.cross(v1, v2)
         return np.degrees(np.arccos(cosang)), axis
+    
+   
 
     def prn_state(self):
         print('Pos', self.state[0:3])
@@ -276,9 +311,9 @@ def main():
     objs.append((Aim(objs[0].rect.centerx, objs[0].rect.centery-10, 90, RED)))
     
     barr_objs = []
-    barr_objs.append(Barrier(450, 450, 100, 75))
-    barr_objs.append(Barrier(90, 450, 100, 75))
-    barr_objs.append(Barrier(295, 450, 50, 75))
+    barr_objs.append(Barrier(58, 425, 'resources/barrier.png'))
+    barr_objs.append(Barrier(258, 425, 'resources/barrier.png'))
+    barr_objs.append(Barrier(458, 425, 'resources/barrier.png'))
 
     '''
     INIT for invaders
@@ -288,7 +323,7 @@ def main():
     pos_x = 10
     pos_y = 10
 
-    exploded_enemy_objs = []
+    #exploded_enemy_objs = []
 
     '''
     INIT for rigid body class. This will handle all the physics involved in any rigid 
@@ -296,7 +331,7 @@ def main():
     '''
     rb = RigidBody([0,-1,0], [0,0,0.1])
     cur_time = 0.0
-    dt = 0.1
+    dt = 0.09
 
     rb.solver.set_initial_value(rb.state, cur_time)
 
@@ -306,7 +341,7 @@ def main():
     while pos_y <= 220:
         if pos_x < 570:
             enemy_objs.append((Invader(pos_x, pos_y, False, 'resources/enemy1.png')))
-            exploded_enemy_objs.append((Invader(pos_x, pos_y, False, 'resources/explosion.png')))
+            #exploded_enemy_objs.append((Invader(pos_x, pos_y, False, 'resources/explosion.png')))
             pos_x += 80
         else:
             pos_x = 10
@@ -403,8 +438,19 @@ def main():
                     j.shot()
             #projectile - barrier
             for j in barr_objs:
-                if i.x < j.x + j.width and i.x > j.x and i.y < j.y + j.height and i.y > j.y:
-                    objs.remove(i)
+                #if i.x < j.x + j.width and i.x > j.x and i.y < j.y + j.height and i.y > j.y:
+                #if (j.rect.x < i.x < j.rect.x + 128) and (j.rect.y+93 < i.y < j.rect.y):
+                if i.x < j.rect.x + 128 and i.x > j.rect.x and i.y < j.rect.y + 93 and i.y > j.rect.y:
+                    if (i.x < j.rect.x + 64) and (i.x > j.rect.x):
+                        print("hit left")
+                        j.shot_l()
+                        objs.remove(i)
+                    elif (i.x > j.rect.x + 64) and (i.x < j.rect.x + 128):
+                        print("hit right")
+                        j.shot_r()
+                        objs.remove(i)
+                
+
             #projectile boundry check - if outside box remove projectile else update it
             if i.x > width or i.x < 0 or i.y > height or i.y < -height:
                 objs.remove(i)
@@ -414,13 +460,64 @@ def main():
        
         for i in enemy_objs:
             for j in barr_objs:
-                #checks if feet are in the barrier 
-                if (i.rect.y + 64 > j.y 
-                    and ((i.rect.x > j.x and i.rect.x < j.x + j.width) 
-                    or (i.rect.x + 64 > j.x and i.rect.x + 64 < j.x + j.width))):
+                #checks enemy - barrier collision 
+                if pygame.Rect.colliderect(i.rect, j.rect):
                     enemy_objs.remove(i)
                     barr_objs.remove(j)
+
+        for j in barr_objs:
+            if j.hit_l:     
+                print("hit left")
+                
+                rb.state = rb.solver.integrate(cur_time)
+                cur_time += dt
+
+                angle, axis = rb.get_angle_2d()
+                if axis[2] < 0:
+                    angle *= -1.
+
+                pos = (j.rect.x, j.rect.y)
+                
+                #i.update(pos[0] , pos[1])
+                #i.update(rb.state[0], rb.state[1])
+            
+                print("ANGLE", angle)
+                
+                j.rotate(angle)
+                j.draw(screen)
+                pygame.display.update() 
+
+                if 90 < angle < 100:
+                    angle += 20
+                    j.hit_l = False
+ 
+            elif j.hit_r:
+                print("hit right")
+
+                rb.state = rb.solver.integrate(cur_time)
+                cur_time += dt
+
+                angle, axis = rb.get_angle_2d()
+                if axis[2] < 0:
+                    angle *= -1.
+
+                pos = (j.rect.x, j.rect.y)
+                
+                #i.update(pos[0] , pos[1])
+                #i.update(rb.state[0], rb.state[1])
+            
+                print("ANGLE", angle)
+                
+                j.rotate(angle)
+                j.draw(screen)
+                pygame.display.update() 
+
+                if 90 < angle < 100:
+                    angle += 20
+                    j.hit_r = False
                     
+                
+
        # if an enemy reaches the player ends game
         for i in enemy_objs:
             if (i.rect.y + 32 > objs[0].y) and (i.rect.x < objs[0].rect.x + objs[0].rect.width and i.rect.x + i.rect.width > objs[0].rect.x):
